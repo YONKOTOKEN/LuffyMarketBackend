@@ -26,8 +26,8 @@ const SaleSchema = Schema({
         default: 'fixed'
     },
     timeStamp: {
-        type: Date,
-        default: Date.now
+        type: Number,
+       // default: Date.now
     },
     signature: {
         type: String
@@ -35,6 +35,12 @@ const SaleSchema = Schema({
     walletAddress: {
         type: String,
         lowercase: true
+    },
+    burn_Method: {
+        type: Boolean,
+    },
+    tokenUri: {
+        type: String
     },
     updated_at: {
         type: Date

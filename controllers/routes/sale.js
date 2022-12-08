@@ -8,7 +8,7 @@ const FolderSchema = require("../../models/folders");
 const WhitelistSchema = require('../../models/whitelist');
 const NFTSchema = require("../../models/nfts");
 
-router.post('/list', async(req, res) => {
+router.post('/list', async(req, res) => {console.log(req.body, "list===========>");
     try {
         const { 
             nftAddress, 
@@ -19,7 +19,10 @@ router.post('/list', async(req, res) => {
             divid,
             timeStamp, 
             signature, 
-            walletAddress 
+            walletAddress,
+            amount,
+            burn_Method ,
+            tokenUri
         } = req.body;
 
         let _sale = new SaleSchema({
@@ -31,7 +34,10 @@ router.post('/list', async(req, res) => {
             divid,
             timeStamp,
             signature,
-            walletAddress
+            walletAddress,
+            amount,
+            burn_Method,
+            tokenUri
         });
 
         await _sale.save(function(err, result){console.log(err, "list_save")});
