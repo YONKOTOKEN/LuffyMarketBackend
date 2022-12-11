@@ -7,12 +7,14 @@ const UserSchema = require("../../models/users");
 const FolderSchema = require("../../models/folders");
 const WhitelistSchema = require('../../models/whitelist');
 const NFTSchema = require("../../models/nfts");
+const { collection } = require('../../models/folders');
 
-router.post('/list', async(req, res) => {console.log(req.body, "list===========>");
+router.post('/list', async(req, res) => {
     try {
         const { 
             nftAddress, 
             tokenID,  
+            collectionId,
             payableAddress, 
             selltype,
             price, 
@@ -28,6 +30,7 @@ router.post('/list', async(req, res) => {console.log(req.body, "list===========>
         let _sale = new SaleSchema({
             nftAddress,
             tokenID,
+            collectionId,
             payableAddress,
             selltype,
             price,
@@ -54,11 +57,16 @@ router.post('/list', async(req, res) => {console.log(req.body, "list===========>
 
 router.post('/get-sale-list', async(req, res) => {
     try {
-        const { walletAddress } = req.body;
-        
-        let fixedData = await SaleSchema.find({ });
+        const { id } = req.body;
+        let collectionData;
+        if(id == "all") {
+             collectionData = await SaleSchema.find({ });
+        }
+        else {
+            collectionData = await SaleSchema.find({collectionId: id });
+        }
         res.status(200).json({ 
-            list: fixedData
+            list: collectionData
         });
     } catch(err) {
         res.status(400).json({
@@ -66,6 +74,21 @@ router.post('/get-sale-list', async(req, res) => {
         });
     }
 });
+
+router.post('/delete-list', async(req, res) => {
+    try {
+        const { id } = req.body;
+        await SaleSchema.findByIdAndDelete(id);
+        res.status(200).json({
+            message: "Removed successfully!"
+        });
+    } catch(err) {
+        res.status(400).json({
+            error: "Your request is restricted"
+        });
+    }
+})
+
 
 router.post('/item-sale-list', async(req, res) => {
     try {

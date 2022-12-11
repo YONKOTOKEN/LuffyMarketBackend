@@ -9,6 +9,9 @@ const SaleSchema = Schema({
     tokenID: {
         type: Number
     },
+    collectionId: {
+        type: String
+    },
     payableAddress: {
         type: String
     },

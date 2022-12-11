@@ -3,26 +3,44 @@ var Mongoose = require("mongoose");
 const { Schema } = Mongoose;
 
 const FolderSchema = Schema({
-    name: {
+    img: {
         type: String
     },
-    artist: {
-        type: String,
-        lowercase: true
-    },
-    category: {
-        type: String,
-        lowercase: true
-    },
-    description: {
+    userImg: {
         type: String
     },
-    isPublic:{
+    title: {
+        type: String
+    },
+    username: {
+        type: String
+    },
+    wallet: {
+        type: String
+    },
+    art: {
         type: Boolean,
         default: false
     },
-    updated_at: {
-        type: Date
+    collect: {
+        type: Boolean,
+        default: false
+    },
+    domain: {
+        type: Boolean,
+        default: false
+    },
+    music: {
+        type: Boolean,
+        default: false
+    },
+    photo: {
+        type: Boolean,
+        default: false
+    },
+    burn: {
+        type: Boolean,
+        default: false
     },
     created_at: {
         type: Date,

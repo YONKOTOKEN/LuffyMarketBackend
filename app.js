@@ -4,6 +4,7 @@ var express = require('express');
 var mongoose = require('mongoose');
 var path = require('path');
 var cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
 var logger = require('morgan');
 var cors = require('cors');
 var helmet = require('helmet');
@@ -11,10 +12,16 @@ var chalk = require('chalk');
 var { database } = require('./config/key');
 var routes = require("./controllers");
 var app = express();
-
+const fileUpload = require("express-fileupload");
+app.use(fileUpload({
+    useTempFiles : true,
+    tempFileDir : '/tmp/'
+}));
 // view engine setup
 app.use(logger('dev'));
 app.use(express.json());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
 app.use(
   helmet({
     crossOriginEmbedderPolicy: "require-corp",

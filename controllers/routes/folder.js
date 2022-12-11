@@ -1,4 +1,5 @@
 let router = require('express').Router();
+var express = require('express');
 const FolderSchema = require('../../models/folders');
 const NFTSchema = require('../../models/nfts');
 const SaleSchema = require('../../models/sale');
@@ -6,66 +7,69 @@ const UserSchema = require('../../models/users');
 const WhitelistSchema = require('../../models/whitelist');
 const mongoose = require('mongoose');
 const checkAuth = require('../../helpers/auth');
+var app = express();
 
-router.post('/create-new-items', async(req, res) => {
-    try {
-        const { name, artist, category, list, description } = req.body;
-        if (!name) {
+
+router.post('/create-new-collection', async(req, res) => {
+    try { 
+        const { title, username, wallet, art, collect, domain, music, photo, burn } = req.body;
+        const img = req.files.file.name;
+        const userImg = req.files.userfile.name;
+        console.log(req.files,req.body, "file upload")
+        //const img = "img"; const userImg = "userImg";
+        if (req.files === null) {
             return res.status(400).json({
-                error: "Name is not defined"
+                error: "No file was uploaded"
+            })
+        }
+        if (!username) {
+            return res.status(400).json({
+                error: "Namee is not defined"
             });
         }
-
-        if (!artist) {
+        if (!title) {
             return res.status(400).json({
-                error: "Artist is not defined"
+                error: "Title is not defined"
             });
         }
-
-        if (!list.length) {
-            return res.status(400).json({
-                error: "List is empty"
-            });
-        }
-
-        if (!category) {
-            return res.status(400).json({
-                error: "Category is required"
-            });
-        }
-
-        const _existingUser = await UserSchema.findById(artist);
-        if (!_existingUser) {
-            return res.status(400).json({
-                error: "Artist is not existing user"
-            });
-        }
-
+        const file = req.files.file;
+        const userAvatar = req.files.userfile; 
+        file.mv(`public/collections/${file.name}`, (err) => {
+            if (err) {
+              console.error(err);
+              return res.status(500).send(err);
+            }
+            //res.json({ fileName: file.name, filePath: `public/collections/${file.name}` });
+          });
+        userAvatar.mv(`public/collections/${userAvatar.name}`, (err) => {
+            if (err) {
+              console.error(err);
+              return res.status(500).send(err);
+            }
+            //res.json({ fileName: file.name, filePath: `public/collections/${file.name}` });
+          });
         let folder = new FolderSchema({
-            name,
-            artist,
-            category,
-            description
+            img,
+            userImg,
+            title,
+            username, 
+            wallet, 
+            art, 
+            collect, 
+            domain, 
+            music, 
+            photo, 
+            burn
         });
 
-        const newFolder = await folder.save();
-        for (let i = 0; i < list.length; i ++) {
-            const _existingNFT = await NFTSchema.findOne({ tokenID: list[i] });
-            if (!_existingNFT) {
-                const newNFT = new NFTSchema({
-                    tokenID: list[i],
-                    folderID: newFolder._id.toString()
-                });
-                await newNFT.save();
-            }
-        }
-
-        res.status(200).json({
+        await folder.save();
+        res.send({
             message: "Add NFTs and folder successfully"
         });
     } catch(err) {
         res.status(400).json({
-            error: "Your request is restricted"
+            error: "Your request is restricted",
+            message: err        
         });
     }
 });
@@ -113,19 +117,11 @@ router.post('/add-items-to-old', async(req, res) => {
     }
 });
 
-router.post('/get-folder-list', async(req, res) => {
+router.post('/get-collection', async(req, res) => {
     try {
-        const { artist } = req.body;
-        let list;
-        if (artist) {
-            list = await FolderSchema.find({
-                artist
-            });
-        } else {
-            list = await FolderSchema.find();
-        }
+        let list = await FolderSchema.find({ });
         res.status(200).json({
-            list
+            collection: list
         });
     } catch(err) {
         res.status(400).json({
