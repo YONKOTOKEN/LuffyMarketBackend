@@ -4,7 +4,7 @@ const router = require("express").Router();
 
 router.post('/create-log', async(req, res) => {
     const { nftAddress, nftId, nftName, walletAddress, type, tokenAddr, tokenPrice } = req.body;
-
+console.log(req.body, "activity_testing")
     let logs = new ActivitySchema({
         nftAddress,
         nftId,
