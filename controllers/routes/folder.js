@@ -12,7 +12,7 @@ var app = express();
 
 router.post('/create-new-collection', async(req, res) => {
     try { 
-        const { title, username, wallet, art, collect, domain, music, photo, burn } = req.body;
+        const { title, username, wallet, category, burn } = req.body;
         const img = req.files.file.name;
         const userImg = req.files.userfile.name;
         console.log(req.files,req.body, "file upload")
@@ -54,11 +54,7 @@ router.post('/create-new-collection', async(req, res) => {
             title,
             username, 
             wallet, 
-            art, 
-            collect, 
-            domain, 
-            music, 
-            photo, 
+            category,  
             burn
         });
 
@@ -74,41 +70,11 @@ router.post('/create-new-collection', async(req, res) => {
     }
 });
 
-router.post('/add-items-to-old', async(req, res) => {
+router.post('/get-all-collection', async(req, res) => {
     try {
-        const { folderID, list } = req.body;
-        if (!folderID) {
-            return res.status(400).json({
-                error: "Folder id is required"
-            });
-        }
-
-        if (!list.length) {
-            return res.status(400).json({
-                error: "List is empty"
-            });
-        }
-
-        const _existedFolder = await FolderSchema.findOne({ _id: mongoose.Types.ObjectId(folderID) });
-        if (!_existedFolder) {
-            return res.status(400).json({
-                error: "No folder exist"
-            });
-        }
-
-        for (let i = 0; i < list.length; i ++) {
-            const _existingNFT = await NFTSchema.findOne({ tokenID: list[i] });
-            if (!_existingNFT) {
-                const newNFT = new NFTSchema({
-                    tokenID: list[i],
-                    folderID
-                });
-                await newNFT.save();
-            }
-        }
-
+        let list = await FolderSchema.find({ });
         res.status(200).json({
-            message: "Added success"
+            collection: list
         });
     } catch(err) {
         res.status(400).json({
@@ -117,9 +83,110 @@ router.post('/add-items-to-old', async(req, res) => {
     }
 });
 
+router.post('/get-my-collection', async(req, res) => {
+    try {
+        let list = await FolderSchema.find({ wallet: req.body.wallet });
+        res.status(200).json({
+            collection: list
+        });
+    } catch(err) {
+        res.status(400).json({
+            error: "Your request is restricted"
+        });
+    }
+});
+
+router.post('/get-collection-info', async(req, res) => {console.log(req.body.id)
+    try {
+        let list = await FolderSchema.findOne({ _id: req.body.id });
+        res.status(200).json({
+            collection: list
+        });
+    } catch(err) {
+        res.status(400).json({
+            error: "Your request is restricted"
+        });
+    }
+});
+
+router.post('/delete-collection', async(req, res) => {
+    try {
+        const { id } = req.body;
+        await FolderSchema.findByIdAndDelete(id);
+        res.status(200).json({
+            message: "Removed successfully!"
+        });
+    } catch(err) {
+        res.status(400).json({
+            error: "Your request is restricted"
+        });
+    }
+})
+
+router.post('/update-collection', async(req, res) => {console.log( req.body, "update collection")
+    try { 
+        const { title, username, wallet, category, burn, id } = req.body;
+        const img = req.files.file.name;
+        const userImg = req.files.userfile.name;
+        console.log(req.files,req.body, "file upload")
+        //const img = "img"; const userImg = "userImg";
+        if (req.files === null) {
+            return res.status(400).json({
+                error: "No file was uploaded"
+            })
+        }
+        if (!username) {
+            return res.status(400).json({
+                error: "Namee is not defined"
+            });
+        }
+        if (!title) {
+            return res.status(400).json({
+                error: "Title is not defined"
+            });
+        }
+        const file = req.files.file;
+        const userAvatar = req.files.userfile; 
+        file.mv(`public/collections/${file.name}`, (err) => {
+            if (err) {
+              console.error(err);
+              return res.status(500).send(err);
+            }
+            //res.json({ fileName: file.name, filePath: `public/collections/${file.name}` });
+          });
+        userAvatar.mv(`public/collections/${userAvatar.name}`, (err) => {
+            if (err) {
+              console.error(err);
+              return res.status(500).send(err);
+            }
+            //res.json({ fileName: file.name, filePath: `public/collections/${file.name}` });
+          });
+        let folder = new FolderSchema({
+            img,
+            userImg,
+            title,
+            username, 
+            wallet, 
+            category,  
+            burn
+        });
+
+        await FolderSchema.findByIdAndUpdate( folder, { id: req.body.id });
+        res.send({
+            message: "Add NFTs and folder successfully"
+        });
+    } catch(err) {
+        res.status(400).json({
+            error: "Your request is restricted",
+            message: err        
+        });
+    }
+});
+
+
 router.post('/get-collection', async(req, res) => {
     try {
-        let list = await FolderSchema.find({ });
+        let list = await FolderSchema.find({wallet: req.body.wallet });
         res.status(200).json({
             collection: list
         });

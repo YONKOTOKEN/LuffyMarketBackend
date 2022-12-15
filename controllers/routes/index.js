@@ -6,6 +6,7 @@ let newsletter = require('./externals');
 let sale = require('./sale');
 let folder = require('./folder');
 let admin = require('./admin');
+let bid = require('./bid');
 
 router.use('/user', users);
 router.use('/auth', auth);
@@ -13,6 +14,7 @@ router.use('/activity', activity);
 router.use('/news', newsletter);
 router.use('/folder', folder);
 router.use('/sale', sale);
+router.use('/bid', bid);
 router.use('/admin', admin);
 
 module.exports = router;

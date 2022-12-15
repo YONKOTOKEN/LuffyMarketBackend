@@ -2,19 +2,28 @@ let Mongoose = require('mongoose');
 let { Schema } = Mongoose;
 
 const ActivityLogs = Schema({
-    walletAddress :{
+    nftAddress :{
         type: String,
         lowercase: true
     },
-    tokenID: {
+    nftId: {
         type: String
     },
-    type: {
-        type: String,
-        enum: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+    nftName: {
+        type: String
     },
-    price: {
-        type: Number
+    walletAddress: {
+        type: String,
+        lowercase: true
+    },
+    type: {
+        type: String
+    },
+    tokenAddr: {
+        type: Array
+    },
+    tokenPrice: {
+        type: Array
     },
     created_at:{
         type: Date,

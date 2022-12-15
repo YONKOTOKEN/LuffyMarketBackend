@@ -3,13 +3,16 @@ const ActivitySchema = require("../../models/activity-log");
 const router = require("express").Router();
 
 router.post('/create-log', async(req, res) => {
-    const { tokenID, walletAddress, price, type } = req.body;
+    const { nftAddress, nftId, nftName, walletAddress, type, tokenAddr, tokenPrice } = req.body;
 
     let logs = new ActivitySchema({
+        nftAddress,
+        nftId,
+        nftName,
         walletAddress,
-        tokenID,
         type,
-        price
+        tokenAddr,
+        tokenPrice
     });
 
     await logs.save();

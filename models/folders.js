@@ -18,25 +18,8 @@ const FolderSchema = Schema({
     wallet: {
         type: String
     },
-    art: {
-        type: Boolean,
-        default: false
-    },
-    collect: {
-        type: Boolean,
-        default: false
-    },
-    domain: {
-        type: Boolean,
-        default: false
-    },
-    music: {
-        type: Boolean,
-        default: false
-    },
-    photo: {
-        type: Boolean,
-        default: false
+    category: {
+        type: String
     },
     burn: {
         type: Boolean,
