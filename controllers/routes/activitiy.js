@@ -4,7 +4,7 @@ const router = require("express").Router();
 
 router.post('/create-log', async(req, res) => {
     const { nftAddress, nftId, nftName, walletAddress, type, tokenAddr, tokenPrice } = req.body;
-console.log(req.body, "activity_testing")
+
     let logs = new ActivitySchema({
         nftAddress,
         nftId,
@@ -22,19 +22,34 @@ console.log(req.body, "activity_testing")
     })
 });
 
-router.get('/get-logs', async(req, res) => {
-    const { b, type } = req.query;
-    const query = type ? { type } : {};
-    let list = await ActivitySchema.find(query);
-    list = list.slice(Number(b), Number(b) + 5);
-    for await (let item of list) {
-        let user = await UserSchema.findOne({ walletAddress: item.walletAddress });
-        let avatar = user ? user.avatar : "empty-avatar.png";
-        item._doc = { ...item._doc, avatar: avatar, firstName: user ? user.firstName : '???', lastName: user ? user.lastName : "???"};
-    }
+router.post('/get-logs', async(req, res) => {console.log(req.body, "activity testing")
+    try {
+        let collectionData;
+             collectionData = await ActivitySchema.find({ });
+        res.status(200).json({ 
+            list: collectionData
+        });
 
-    res.status(200).json(list);
+    } catch(err) {
+        res.status(400).json({
+            error: "Your request is restricted"
+        });
+    }
 });
+
+// router.get('/get-logs', async(req, res) => {
+//     const { b, type } = req.query;
+//     const query = type ? { type } : {};
+//     let list = await ActivitySchema.find(query);
+//     list = list.slice(Number(b), Number(b) + 5);
+//     for await (let item of list) {
+//         let user = await UserSchema.findOne({ walletAddress: item.walletAddress });
+//         let avatar = user ? user.avatar : "empty-avatar.png";
+//         item._doc = { ...item._doc, avatar: avatar, firstName: user ? user.firstName : '???', lastName: user ? user.lastName : "???"};
+//     }
+
+//     res.status(200).json(list);
+// });
 
 router.post('/get-likes', async(req,res) => {
     const { tokenID, walletAddress } = req.body;
