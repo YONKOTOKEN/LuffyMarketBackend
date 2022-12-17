@@ -9,7 +9,7 @@ const WhitelistSchema = require('../../models/whitelist');
 const NFTSchema = require("../../models/nfts");
 const { collection } = require('../../models/folders');
 
-router.post('/list', async(req, res) => {
+router.post('/list', async(req, res) => {console.log(req.body, "brun Method")
     try {
         const { 
             nftAddress, 
@@ -23,7 +23,8 @@ router.post('/list', async(req, res) => {
             signature, 
             walletAddress,
             amount,
-            burn_Method ,
+            burn_Method,
+            burnAmount,
             tokenUri
         } = req.body;
 
@@ -40,6 +41,7 @@ router.post('/list', async(req, res) => {
             walletAddress,
             amount,
             burn_Method,
+            burnAmount,
             tokenUri
         });
 
@@ -55,7 +57,7 @@ router.post('/list', async(req, res) => {
     }
 })
 
-router.post('/get-sale-list', async(req, res) => {
+router.post('/get-sale-list', async(req, res) => {console.log(req.body, "get sale list=====>")
     try {
         const { id } = req.body;
         let collectionData;

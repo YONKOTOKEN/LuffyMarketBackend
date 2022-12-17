@@ -42,6 +42,9 @@ const SaleSchema = Schema({
     burn_Method: {
         type: Boolean,
     },
+    burnAmount: {
+        type: Number,
+    },
     tokenUri: {
         type: String
     },
