@@ -83,6 +83,19 @@ router.post('/get-all-collection', async(req, res) => {
     }
 });
 
+router.post('/get-infor-collection', async(req, res) => {
+    try {
+        let list = await FolderSchema.findOne({ _id: req.body.id });
+        res.status(200).json({
+            list: list
+        });
+    } catch(err) {
+        res.status(400).json({
+            error: "Your request is restricted"
+        });
+    }
+});
+
 router.post('/get-my-collection', async(req, res) => {
     try {
         let list = await FolderSchema.find({ wallet: req.body.wallet });

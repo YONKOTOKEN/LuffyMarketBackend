@@ -24,12 +24,21 @@ router.post('/create-log', async(req, res) => {
 
 router.post('/get-logs', async(req, res) => {console.log(req.body, "activity testing")
     try {
-        let collectionData;
-             collectionData = await ActivitySchema.find({ });
-        res.status(200).json({ 
-            list: collectionData
-        });
-
+        if(req.body.wallet == 'all') {
+            let collectionData;
+            collectionData = await ActivitySchema.find({ });
+            res.status(200).json({ 
+                list: collectionData
+            });
+        }
+        else {
+            let collectionData;
+            collectionData = await ActivitySchema.find({walletAddress: req.body.wallet });
+            res.status(200).json({ 
+                list: collectionData
+            });
+        }
+       
     } catch(err) {
         res.status(400).json({
             error: "Your request is restricted"
