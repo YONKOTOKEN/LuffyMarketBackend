@@ -58,6 +58,29 @@ router.post('/get-bid-list', async(req, res) => {
     }
 });
 
+router.post('/max-bid-list', async(req, res) => {
+
+    try {
+        const { nftAddress, nftId, seller } = req.body;
+        BidSchema.findOne(
+            {nftAddress: nftAddress, nftId: nftId, seller: seller}
+        ).sort(
+            { "tokenAmount":-1}
+        ).exec(function(err, doc){
+            var max = doc.tokenAmount;
+            res.status(200).json({
+                list: doc
+            });
+        })
+        
+    } catch(err) {
+        console.log("Error: ",err)
+        res.status(400).json({
+            error: "Your request is restricted"
+        });
+    } 
+})
+
 router.post('/delete-bid-list', async(req, res) => {console.log(req.body,"id====>")
     try {
         const { id } = req.body;
