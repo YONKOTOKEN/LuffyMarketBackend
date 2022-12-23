@@ -122,6 +122,41 @@ router.post('/get-collection-info', async(req, res) => {console.log(req.body.id)
     }
 });
 
+router.post('/get-category-folder', async(req, res) => {
+    try {
+        // let list = await FolderSchema.find({
+        //     category: req.body.category
+        // });
+        let list = await FolderSchema.aggregate([
+            {
+                $match: {
+                    category: req.body.category
+                }
+            },
+            {
+              $lookup: {
+                from: "SaleSchema",
+                localField: "_id",
+                foreignField: "collectionId",
+                as: "Category"
+              }
+            },
+           
+          ]);
+        // .then((res) => {
+        //     console.log(res, "list collection and result")
+        // });
+      console.log(list, "list collection and folder join")
+        res.status(200).json({
+            category: list
+        });
+    } catch(err) {
+        res.status(400).json({
+            error: "Your request is restricted"
+        });
+    }
+});
+
 router.post('/delete-collection', async(req, res) => {
     try {
         const { id } = req.body;

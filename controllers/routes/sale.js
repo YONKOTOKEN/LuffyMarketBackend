@@ -25,6 +25,8 @@ router.post('/list', async(req, res) => {
             amount,
             burn_Method,
             burnAmount,
+            setRoyal,
+            nftTime,
             tokenUri
         } = req.body;
 
@@ -42,6 +44,8 @@ router.post('/list', async(req, res) => {
             amount,
             burn_Method,
             burnAmount,
+            setRoyal,
+            nftTime,
             tokenUri
         });
 

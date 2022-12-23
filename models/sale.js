@@ -45,6 +45,12 @@ const SaleSchema = Schema({
     burnAmount: {
         type: Number,
     },
+    setRoyal: {
+        type: Number,
+    },
+    nftTime: {
+        type: Date
+    },
     tokenUri: {
         type: String
     },
