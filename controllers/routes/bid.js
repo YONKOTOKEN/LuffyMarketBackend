@@ -67,7 +67,7 @@ router.post('/max-bid-list', async(req, res) => {
         ).sort(
             { "tokenAmount":-1}
         ).exec(function(err, doc){
-            var max = doc.tokenAmount;
+            var max = doc?.tokenAmount;
             res.status(200).json({
                 list: doc
             });

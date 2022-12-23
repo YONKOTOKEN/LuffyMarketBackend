@@ -25,6 +25,10 @@ const FolderSchema = Schema({
         type: Boolean,
         default: false
     },
+    itemCount: {
+        type: Number,
+        default: 0
+    },
     created_at: {
         type: Date,
         default: Date.now

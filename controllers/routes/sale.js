@@ -9,7 +9,7 @@ const WhitelistSchema = require('../../models/whitelist');
 const NFTSchema = require("../../models/nfts");
 const { collection } = require('../../models/folders');
 
-router.post('/list', async(req, res) => {console.log(req.body, "brun Method")
+router.post('/list', async(req, res) => {
     try {
         const { 
             nftAddress, 
@@ -45,19 +45,30 @@ router.post('/list', async(req, res) => {console.log(req.body, "brun Method")
             tokenUri
         });
 
-        await _sale.save(function(err, result){console.log(err, "list_save")});
-        res.status(200).json({
-            message: "Listed successfully"
-        });
-
+        await _sale.save(function(err, result){
+            res.status(200).json({
+                id: result._id
+            });
+        })
     } catch(err) {
         res.status(400).json({
             error: "Your request is restricted"
         });
     }
 })
-
-router.post('/get-sale-list', async(req, res) => {console.log(req.body, "get sale list=====>")
+router.post('/get-itemCount', async(req, res) => {
+    try {
+       let itemCount = await SaleSchema.countDocuments( {collectionId: req.body.collectionId} )
+        res.status(200).json({
+            list: itemCount
+        })
+    } catch(err) {
+        res.status(400).json({
+            error: "Your requst is restricted"
+        });
+    }
+})
+router.post('/get-sale-list', async(req, res) => {
     try {
         const { id } = req.body;
         let collectionData;
@@ -69,6 +80,26 @@ router.post('/get-sale-list', async(req, res) => {console.log(req.body, "get sal
         }
         res.status(200).json({ 
             list: collectionData
+        });
+    } catch(err) {
+        res.status(400).json({
+            error: "Your request is restricted"
+        });
+    }
+});
+
+router.post('/get-sale-check', async(req, res) => {
+    try {console.log(req.body, "data link")
+        let isSale;
+       
+        isSale = await SaleSchema.findOne({
+            nftAddress: req.body.nftAddress,
+            tokenID: req.body.nftId,
+            walletAddress: req.body.walletAddress
+         });
+        
+        res.status(200).json({ 
+            list: isSale
         });
     } catch(err) {
         res.status(400).json({
