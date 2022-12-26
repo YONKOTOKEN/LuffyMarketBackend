@@ -3,13 +3,14 @@ const ActivitySchema = require("../../models/activity-log");
 const router = require("express").Router();
 
 router.post('/create-log', async(req, res) => {
-    const { nftAddress, nftId, nftName, walletAddress, type, tokenAddr, tokenPrice } = req.body;
+    const { nftAddress, nftId, nftName, from, to, type, tokenAddr, tokenPrice } = req.body;
 
     let logs = new ActivitySchema({
         nftAddress,
         nftId,
         nftName,
-        walletAddress,
+        from,
+        to,
         type,
         tokenAddr,
         tokenPrice
@@ -22,7 +23,7 @@ router.post('/create-log', async(req, res) => {
     })
 });
 
-router.post('/get-logs', async(req, res) => {console.log(req.body, "activity testing")
+router.post('/get-logs', async(req, res) => {
     try {
         if(req.body.wallet == 'all') {
             let collectionData;
@@ -33,11 +34,47 @@ router.post('/get-logs', async(req, res) => {console.log(req.body, "activity tes
         }
         else {
             let collectionData;
-            collectionData = await ActivitySchema.find({walletAddress: req.body.wallet });
+            collectionData = await ActivitySchema.find({
+                $or: [
+                    {
+                        from: req.body.wallet
+                    },
+                    {
+                        to: req.body.wallet
+                    }
+                ]
+            });
             res.status(200).json({ 
                 list: collectionData
             });
         }
+       
+    } catch(err) {
+        res.status(400).json({
+            error: "Your request is restricted"
+        });
+    }
+});
+
+router.post('/get-nft-logs', async(req, res) => {
+    try {
+        let activityData;
+            if(req.body.type === "all") {
+                activityData = await ActivitySchema.find({
+                    nftAddress: req.body.nftAddress,
+                    nftId: req.body.nftId
+                });
+            }
+            else {
+                activityData = await ActivitySchema.find({
+                    nftAddress: req.body.nftAddress,
+                    nftId: req.body.nftId,
+                    type: req.body.type
+                });
+            }
+            res.status(200).json({ 
+                data: activityData
+            });
        
     } catch(err) {
         res.status(400).json({

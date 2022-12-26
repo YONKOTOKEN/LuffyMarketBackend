@@ -12,7 +12,11 @@ const ActivityLogs = Schema({
     nftName: {
         type: String
     },
-    walletAddress: {
+    from: {
+        type: String,
+        lowercase: true
+    },
+    to: {
         type: String,
         lowercase: true
     },
