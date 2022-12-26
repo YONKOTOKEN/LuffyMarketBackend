@@ -4,71 +4,29 @@ const { Schema } = Mongoose;
 
 const UserSchema = Schema({
     name: {
-        type: String
+        type: String,
+        default: "Unnamed"
     },
-    // username: {
-    //     type: String,
-    //     lowercase: true
-    // },
-    // email: {
-    //     type: String,
-    //     // required: () => {
-    //     //     return this.provider !== 'email' ? false : true
-    //     // },
-    //     lowercase: true
-    // },
     walletAddress: {
         type: String,
         lowercase: true
     },
-    // password: {
-    //     type: String
-    // },
     avatar: {
-        default: "empty-avatar.png",
+        default: "avatar.png",
         type: String
     },
-    facebook: {
-        type: String
-    },
-    instagram: {
-        type: String
-    },
-    twitter: {
-        type: String
-    },
-    linkedin: {
-        type: String
-    },
-    tiktok: {
-        type: String
-    },
-    telegram: {
+    backavatar: {
+        default: "back-avatar.png",
         type: String
     },
     description: {
-        type: String
+        type: String,
+        default: "welcome"
     },
     role: {
         type: String,
         default: 'ROLE_VISITOR',
         enum: ['ROLE_VISITOR', 'ROLE_CREATOR', 'ROLE_ADMIN']
-    },
-    // verified: {
-    //     type: Boolean,
-    //     default: true
-    // },
-    // verifyToken: {
-    //     type: String
-    // },
-    // resetPasswordToken: {
-    //     type: String
-    // },
-    // resetPasswordExpires: {
-    //     type: Date
-    // },
-    updated_at: {
-        type: Date
     },
     created_at: {
         type: Date,

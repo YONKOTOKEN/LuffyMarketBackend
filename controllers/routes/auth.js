@@ -16,71 +16,16 @@ const courier = CourierClient({ authorizationToken: "pk_prod_YTMEXMYZA84MWVPTW3K
 
 router.post('/login', async(req, res) => {
     try {
-        let { id, password } = req.body;
-        // const exitingEmail = await UserSchema.findOne({ email: id });
-        const existingUserName = await UserSchema.findOne({ username: id });
+        const existingUserName = await UserSchema.findOne({ walletAddress: req.body.wallet });
         if (existingUserName) {
-            // const user = existingUserName ? existingUserName : exitingEmail;
-            const user = existingUserName;
-            const isMatch = await bcrypt.compare(password, user.password);
-            
-            if (!isMatch) {
-                return res.status(400).json({
-                    error: 'Password is not correct.'
+                return res.status(200).json({
+                    exist: true,
+                    data: existingUserName
                 });
-            }
-
-            // if (!user.verified) {
-
-            //     const buffer = crypto.randomBytes(48);
-            //     const verifyToken = buffer.toString('hex');
-
-            //     user.verifyToken = verifyToken;
-            //     await user.save();
-
-            //     // await courier.send({
-            //     //     message: {
-            //     //         content: {
-            //     //             title: "Verify your account",
-            //     //             body: `${
-            //     //                 'You are receiving this because you have requested to regsitered into platform.\n\n' +
-            //     //                 'Please verify account\n\n' +
-            //     //                 'https://marketplace.nftdevelopments.site/verify/'
-            //     //             }${verifyToken}/${user.email}/${user.username}`
-            //     //         },
-            //     //         data: {
-            //     //             joke: ""
-            //     //         },
-            //     //         to: {
-            //     //             email: user.email
-            //     //         },
-            //     //         timeout: {
-            //     //             message: 600000
-            //     //         }
-            //     //     }
-            //     // });
-            //     return res.status(400).json({
-            //         status: true,
-            //         error: 'Your account is not verified. Please check your email and verify account.'
-            //     })
-
-            // };
-
-            const payload = {
-                id: user.id
-            };
-
-            const token = jwt.sign(payload, JWT.secret, { expiresIn: JWT.tokenLife });
-
-            return res.status(200).json({
-                success: true,
-                token: `Bearer ${token}`,
-                user: user
-            });
         }
         else {
-            res.status(400).json({
-                error: 'No existing user'
+            res.status(200).json({
+                exist: false
             });
         }
     } catch(err) {
@@ -92,102 +37,19 @@ router.post('/login', async(req, res) => {
 
 router.post('/register', async(req, res) => {
     try {
-        const { walletAddress, signature, action } = req.body;
-        // if (!emailValidator.validate(email)) {
-        //     return res.status(400).json({ error: 'You must enter an correct email address.' });
-        // }
-
-        if (!walletValidator.validate(walletAddress, 'ETH')) {
-            return res.status(400).json({ error: 'You must enter an correct BSC wallet address.' });
-        }
-
-        // if (!name) {
-        //     return res.status(400).json({ error: 'You must enter your full name.' });
-        // }
-    
-        // if (!password) {
-        //     return res.status(400).json({ error: 'You must enter a password.' });
-        // }
-
-        // if (!username) {
-        //     return res.status(400).json({ error: 'You must enter a user name.' });
-        // }
-
-        // const existingEmail = await UserSchema.findOne({ email });
-        // const existingUserName = await UserSchema.findOne({ username });
-        const existingWallet =  await UserSchema.findOne({ walletAddress });
-        // if (existingEmail) {
-        //     return res.status(400).json({ error: 'That email address is already in use.' });
-        // }
-
-        // if (existingUserName) {
-        //     return res.status(400).json({ error: 'That username is already in use.' });
-        // }
-
-        if (existingWallet) {
-            return res.status(400).json({ error: 'That wallet address is already in use.' });
-        }
-
-        const validateSign  = await authSign(walletAddress, action, signature);
-        if (!validateSign) {
-            return res.status(400).json({ error: 'Signature is invalid.' });
-        }
-        // const buffer = crypto.randomBytes(48);
-        // const verifyToken = buffer.toString('hex');
+        const { walletAddress } = req.body;
 
         let user = new UserSchema({
-            // email,
-            // username,
-            // name,
             walletAddress,
-            // password,
-            // verifyToken
         });
 
-        // const salt = await bcrypt.genSalt(10);
-        // const hash = await bcrypt.hash(user.password, salt);
-        
-        // user.password = hash;
         await user.save();
 
-        // const payload = {
-        //     id: registeredUser.id
-        // };
-
-        // const token = jwt.sign(payload, JWT.secret, { expiresIn: JWT.tokenLife });
-
-        // await courier.send({
-        //     message: {
-        //         content: {
-        //             title: "Verify your account",
-        //             body: `${
-        //                 'You are receiving this because you have requested to regsitered into platform.\n\n' +
-        //                 'Please verify account.\n\n' +
-        //                 'https://marketplace.nftdevelopments.site/verify/'
-        //             }${verifyToken}/${email}/${username}`
-        //         },
-        //         data: {
-        //             joke: ""
-        //         },
-        //         to: {
-        //             email: email
-        //         },
-        //         timeout: {
-        //             message: 600000
-        //         }
-        //     }
-        // });
         res.status(200).json({
             status: true,
-            message: 'You have registered. Please login.',
+            message: 'You have registered.',
             user
         })
-
-        // return res.status(200).json({
-        //     success: true,
-        //     token: `Bearer ${token}`,
-        //     user: registeredUser
-        // });
 
     } catch(err) {
         console.log(err)
@@ -196,6 +58,54 @@ router.post('/register', async(req, res) => {
         });
     }
 });
+
+router.post(`/coverPhoto`, async(req, res) => {
+    try { 
+        const { id, name } = req.body;
+        const coverPhoto = req.files.coverPhoto;
+        coverPhoto.mv(`public/images/${coverPhoto.name}`, (err) => {
+            if (err) {
+              console.error(err);
+              return res.status(500).send(err);
+            }
+          });
+
+        await UserSchema.findOneAndUpdate({ _id: id }, {backavatar: name});
+
+        res.send({
+            message: "Update the image successfully"
+        });
+    } catch(err) {
+        res.status(400).json({
+            error: "Your request is restricted",
+            message: err        
+        });
+    }
+})
+
+router.post(`/profilePhoto`, async(req, res) => {
+    try { 
+        const { id, name } = req.body;
+        const profilePhoto = req.files.profilePhoto;
+        profilePhoto.mv(`public/images/${profilePhoto.name}`, (err) => {
+            if (err) {
+              console.error(err);
+              return res.status(500).send(err);
+            }
+          });
+
+        await UserSchema.findOneAndUpdate({ _id: id }, {avatar: name});
+
+        res.send({
+            message: "Update the image successfully"
+        });
+    } catch(err) {
+        res.status(400).json({
+            error: "Your request is restricted",
+            message: err        
+        });
+    }
+})
 
 router.post('/verify', async(req, res) => {
     try {
